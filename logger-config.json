@@ -1,5 +1,5 @@
 {
   "logDirPath": ".",
-  "logIntervalSeconds": 60,
-  "maxLogEntries": 1440
+  "logIntervalSeconds": 300,
+  "maxLogEntries": 43200
 }
