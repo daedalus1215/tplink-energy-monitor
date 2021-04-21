@@ -1,3 +1,8 @@
+const FELLOWSHIP = '8006165E9AF891539E59440D7E7DFAE11DE187BA';
+const BAGGINS = '800650310E681064FD6305CF4A3E6F2E1DDFA451';
+const MIN_LIMIT_BAGGINS = '610';
+const MIN_LIMIT_FELLOWSHIP = '770';
+
 var dash = {
   deviceId: null,
 
@@ -9,7 +14,7 @@ var dash = {
   monthlyUsageChart: null,
   usageLogChart: null,
 
-  init: function(deviceId) {
+  init: function (deviceId) {
     this.deviceId = deviceId;
 
     if (this.deviceId) {
@@ -21,11 +26,11 @@ var dash = {
     this.initDailyUsageChart();
     this.initMonthlyUsageChart();
     this.initUsageLog();
-    
+
     this.initWsConnection();
   },
 
-  initWsConnection: function() {
+  initWsConnection: function () {
     var wsUri = 'ws://' + window.location.host + '/ws'
     var ws = new WebSocket(wsUri);
     ws.onopen = function () {
@@ -40,40 +45,41 @@ var dash = {
     }
     ws.onmessage = dash.wsMessageHandler;
 
-    ws.onclose = function() {
+    ws.onclose = function () {
       // Usually caused by mobile devices going to sleep or the user minimising the browser app.
       // The setTimeout will begin once the device wakes from sleep or the browser regains focus.
       $('#connection-error').show();
       setTimeout(dash.initWsConnection, 2000);
     }
   },
-
-  wsMessageHandler: function(messageEvent) {
+  // "800650310E681064FD6305CF4A3E6F2E1DDFA451" -- Baggins
+  // "8006165E9AF891539E59440D7E7DFAE11DE187BA" -- Fellowship
+  wsMessageHandler: function (messageEvent) {
     let message = JSON.parse(messageEvent.data);
-    if(message.deviceId === dash.deviceId) {
-      if(message.dataType === 'realtimeUsage') {
-        dash.refreshRealtimeDisplay(message.data);
+    if (message.deviceId === dash.deviceId) {
+      if (message.dataType === 'realtimeUsage') {
+        dash.refreshRealtimeDisplay(message);
       }
-      else if(message.dataType === 'dailyUsage') {
+      else if (message.dataType === 'dailyUsage') {
         dash.parseDailyUsageData(message.data);
       }
-      else if(message.dataType === 'monthlyUsage') {
+      else if (message.dataType === 'monthlyUsage') {
         dash.parseMonthlyUsageData(message.data);
       }
-      else if(message.dataType === 'powerState') {
+      else if (message.dataType === 'powerState') {
         dash.refreshPowerState(message.data);
       }
-      else if(message.dataType === 'newLogEntry') {
+      else if (message.dataType === 'newLogEntry') {
         dash.addLogEntry(message.data, true);
       }
-      else if(message.dataType === 'loggedData') {
+      else if (message.dataType === 'loggedData') {
         dash.loadLogEntries(message.data);
       }
     }
 
   },
 
-  initRealtimeGauge: function() {
+  initRealtimeGauge: function () {
     var opts = {
       angle: 0,
       lineWidth: 0.2,
@@ -85,7 +91,7 @@ var dash = {
       limitMax: true,
       limitMin: true,
       generateGradient: true,
-      highDpiSupport: true, 
+      highDpiSupport: true,
       staticLabels: {
         font: "12px sans-serif",
         labels: [500, 1500, 3000]
@@ -97,14 +103,14 @@ var dash = {
       ]
     };
     var target = document.getElementById('rtu-gauge');
-  
+
     dash.realtimeGauge = new Gauge(target).setOptions(opts);
     dash.realtimeGauge.maxValue = 3000;
     dash.realtimeGauge.setMinValue(0);
     dash.realtimeGauge.animationSpeed = 32;
   },
 
-  initRealtimeTrendChart: function() {
+  initRealtimeTrendChart: function () {
     var ctx = document.getElementById('rtt-chart').getContext('2d');
     this.realtimeTrendChart = new Chart(ctx, {
       type: 'line',
@@ -126,7 +132,7 @@ var dash = {
           }],
           yAxes: [{
             ticks: {
-              beginAtZero:true
+              beginAtZero: true
             }
           }]
         },
@@ -147,7 +153,7 @@ var dash = {
     });
   },
 
-  initDailyUsageChart: function() {
+  initDailyUsageChart: function () {
     var ctx = document.getElementById('du-chart').getContext('2d');
     this.dailyUsageChart = new Chart(ctx, {
       type: 'bar',
@@ -166,7 +172,7 @@ var dash = {
         scales: {
           yAxes: [{
             ticks: {
-              beginAtZero:true
+              beginAtZero: true
             }
           }]
         },
@@ -178,7 +184,7 @@ var dash = {
     });
   },
 
-  initMonthlyUsageChart: function() {
+  initMonthlyUsageChart: function () {
     var ctx = document.getElementById('mu-chart').getContext('2d');
     this.monthlyUsageChart = new Chart(ctx, {
       type: 'bar',
@@ -197,7 +203,7 @@ var dash = {
         scales: {
           yAxes: [{
             ticks: {
-              beginAtZero:true
+              beginAtZero: true
             }
           }]
         },
@@ -209,7 +215,7 @@ var dash = {
     });
   },
 
-  initUsageLog: function() {
+  initUsageLog: function () {
     var ctx = document.getElementById('logged-usage-chart').getContext('2d');
     this.usageLogChart = new Chart(ctx, {
       type: 'line',
@@ -256,16 +262,16 @@ var dash = {
     }
   },
 
-  loadLogEntries: function(logEntries) {
-    logEntries.forEach(function(entry) {
+  loadLogEntries: function (logEntries) {
+    logEntries.forEach(function (entry) {
       dash.addLogEntry(entry, false);
     })
 
     dash.usageLogChart.update();
   },
 
-  realtimeTrendChartOnRefresh: function(chart) {
-    chart.data.datasets.forEach(function(dataset) {
+  realtimeTrendChartOnRefresh: function (chart) {
+    chart.data.datasets.forEach(function (dataset) {
       dataset.data.push({
         x: Date.now(),
         y: dash.realtimeTrendLastSample
@@ -273,13 +279,33 @@ var dash = {
     });
   },
 
-  refreshRealtimeDisplay: function(realtime) {
-
-    var power = Math.round(('power_mw' in realtime) ? (realtime.power_mw/1000) : realtime.power);
-    var current = (('current_ma' in realtime) ? (realtime.current_ma/1000) : realtime.current).toFixed(2);
-    var voltage = Math.round(('voltage_mv' in realtime) ? (realtime.voltage_mv/1000) : realtime.voltage);
+  refreshRealtimeDisplay: function (message) {
+    const realtime = message.data;
+    var power = Math.round(('power_mw' in realtime) ? (realtime.power_mw / 1000) : realtime.power);
+    var current = (('current_ma' in realtime) ? (realtime.current_ma / 1000) : realtime.current).toFixed(2);
+    var voltage = Math.round(('voltage_mv' in realtime) ? (realtime.voltage_mv / 1000) : realtime.voltage);
 
     this.realtimeGauge.set(power);
+    if (message.deviceId === BAGGINS) {
+      if (power <= MIN_LIMIT_BAGGINS) {
+        const a = new Audio();
+        a.src = 'pew_pew.m4a';
+        a.autoplay = true;
+        a.play();
+      }
+    }
+    if (message.deviceId === FELLOWSHIP) {
+      if (power <= MIN_LIMIT_FELLOWSHIP) {
+        const a = new Audio();
+        a.src = 'pew_pew.m4a';
+        a.autoplay = true;
+        a.play();
+      }
+    }
+    // const a = new Audio();
+    // // a.src = 'pew_pew.m4a';
+    // // a.autoplay = true;
+    // // a.play();
     // might switch to Vue.js if this gets tedious 
     $("#rtu-power").text(power + " W")
     $("#rtu-current").text(current + " A")
@@ -289,21 +315,21 @@ var dash = {
   },
 
 
-  parseDailyUsageData: function(usageData) {
+  parseDailyUsageData: function (usageData) {
 
     // Clear previous data
     dash.dailyUsageChart.data.labels = [];
-    dash.dailyUsageChart.data.datasets.forEach(function(dataset) {
+    dash.dailyUsageChart.data.datasets.forEach(function (dataset) {
       dataset.data = [];
     });
 
-    usageData.forEach(function(entry) {
+    usageData.forEach(function (entry) {
       // Months from API response are 1 based
       var day = moment([entry.year, entry.month - 1, entry.day]);
 
       dash.dailyUsageChart.data.labels.push(day.format('MMM D'));
-      dash.dailyUsageChart.data.datasets.forEach(function(dataset) {
-        dataset.data.push(('energy_wh' in entry) ? (entry.energy_wh/1000) : entry.energy);
+      dash.dailyUsageChart.data.datasets.forEach(function (dataset) {
+        dataset.data.push(('energy_wh' in entry) ? (entry.energy_wh / 1000) : entry.energy);
       });
     });
 
@@ -311,37 +337,37 @@ var dash = {
     dash.setDailyUsageStats(usageData);
   },
 
-  setDailyUsageStats: function(usageData) {
+  setDailyUsageStats: function (usageData) {
 
-    var dailyTotal = usageData.find(function(d) {
-      return d.day === moment().date() && d.month === (moment().month()+1) && d.year === moment().year()
+    var dailyTotal = usageData.find(function (d) {
+      return d.day === moment().date() && d.month === (moment().month() + 1) && d.year === moment().year()
     });
 
-    var energy = ('energy_wh' in dailyTotal) ? (dailyTotal.energy_wh/1000) : dailyTotal.energy
+    var energy = ('energy_wh' in dailyTotal) ? (dailyTotal.energy_wh / 1000) : dailyTotal.energy
     $("#total-day").text(energy.toFixed(2));
 
-    var total = usageData.reduce(function(t, d) {return t + (('energy_wh' in d) ? (d.energy_wh/1000) : d.energy)}, 0);
-    var avg = total/usageData.length;
+    var total = usageData.reduce(function (t, d) { return t + (('energy_wh' in d) ? (d.energy_wh / 1000) : d.energy) }, 0);
+    var avg = total / usageData.length;
 
     $("#avg-day").text(avg.toFixed(2));
 
   },
 
-  parseMonthlyUsageData: function(usageData) {
-    
+  parseMonthlyUsageData: function (usageData) {
+
     // Clear previous data
     dash.monthlyUsageChart.data.labels = [];
-    dash.monthlyUsageChart.data.datasets.forEach(function(dataset) {
+    dash.monthlyUsageChart.data.datasets.forEach(function (dataset) {
       dataset.data = [];
     });
 
-    usageData.forEach(function(entry) {
+    usageData.forEach(function (entry) {
       // Months from API response are 1 based
-      var month = moment().month(entry.month -1);
+      var month = moment().month(entry.month - 1);
 
       dash.monthlyUsageChart.data.labels.push(month.format('MMM'));
-      dash.monthlyUsageChart.data.datasets.forEach(function(dataset) {
-        dataset.data.push(('energy_wh' in entry) ? (entry.energy_wh/1000) : entry.energy);
+      dash.monthlyUsageChart.data.datasets.forEach(function (dataset) {
+        dataset.data.push(('energy_wh' in entry) ? (entry.energy_wh / 1000) : entry.energy);
       });
     });
 
@@ -349,35 +375,35 @@ var dash = {
     dash.setMonthlyUsageStats(usageData);
   },
 
-  setMonthlyUsageStats: function(usageData) {
+  setMonthlyUsageStats: function (usageData) {
 
-    var monthlyTotal = usageData.find(function(m) {
-      return m.month === (moment().month()+1) && m.year === moment().year()
+    var monthlyTotal = usageData.find(function (m) {
+      return m.month === (moment().month() + 1) && m.year === moment().year()
     });
-    var energy = ('energy_wh' in monthlyTotal) ? (monthlyTotal.energy_wh/1000) : monthlyTotal.energy
+    var energy = ('energy_wh' in monthlyTotal) ? (monthlyTotal.energy_wh / 1000) : monthlyTotal.energy
     $("#total-month").text(energy.toFixed(2));
 
-    var total = usageData.reduce(function(t, m) {return t + (('energy_wh' in m) ? (m.energy_wh/1000) : m.energy)}, 0);
-    var avg = total/usageData.length;
+    var total = usageData.reduce(function (t, m) { return t + (('energy_wh' in m) ? (m.energy_wh / 1000) : m.energy) }, 0);
+    var avg = total / usageData.length;
 
     $("#avg-month").text(avg.toFixed(2));
   },
 
-  refreshPowerState: function(powerState) {
-    if(powerState.isOn) {
+  refreshPowerState: function (powerState) {
+    if (powerState.isOn) {
       $("#power-state").text("ON").attr("class", "label label-success");
     }
     else {
       $("#power-state").text("OFF").attr("class", "label label-danger");
     }
 
-    if(powerState.uptime === 0) {
+    if (powerState.uptime === 0) {
       $("#uptime").text("-");
     }
     else {
-      $("#uptime").text(moment.duration(powerState.uptime, "seconds").format("d[d] h[h] m[m]", {largest: 2}));
+      $("#uptime").text(moment.duration(powerState.uptime, "seconds").format("d[d] h[h] m[m]", { largest: 2 }));
     }
-    
+
   },
 
 };
