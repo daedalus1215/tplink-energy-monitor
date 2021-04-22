@@ -3,8 +3,8 @@ const BAGGINS = '800650310E681064FD6305CF4A3E6F2E1DDFA451';
 const MIN_LIMIT_BAGGINS = '580';
 const MAX_LIMIT_BAGGINS = '680';
 
-const MIN_LIMIT_FELLOWSHIP = '770';
-const MAX_LIMIT_FELLOWSHIP = '805';
+const MIN_LIMIT_FELLOWSHIP = '790';
+const MAX_LIMIT_FELLOWSHIP = '820';
 
 const lastTwentyPower = [];
 
@@ -416,7 +416,7 @@ function powerLimitAlert(message, power, deviceId, minPowerThreshold, maxPowerTh
 
     lastTwentyPower.push(power);
 
-    if (lastTwentyPower.length >= 25) {
+    if (lastTwentyPower.length >= 40) {
       lastTwentyPower.shift();
     }
     console.log('lastTwentyPower', lastTwentyPower)
@@ -433,7 +433,7 @@ function powerLimitAlert(message, power, deviceId, minPowerThreshold, maxPowerTh
     });
     console.log('temporary power limit count', temporaryMinPowerLimitCount);
 
-    if (temporaryMinPowerLimitCount >= 19 || temporaryMaxPowerLimitCount >= 19) {
+    if (temporaryMinPowerLimitCount >= 37 || temporaryMaxPowerLimitCount >= 37) {
       const a = new Audio();
       a.src = 'pew_pew.m4a';
       a.autoplay = true;
