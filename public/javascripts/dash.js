@@ -1,7 +1,9 @@
 const FELLOWSHIP = '8006165E9AF891539E59440D7E7DFAE11DE187BA';
 const BAGGINS = '800650310E681064FD6305CF4A3E6F2E1DDFA451';
-const MIN_LIMIT_BAGGINS = '610';
+const MIN_LIMIT_BAGGINS = '580';
 const MIN_LIMIT_FELLOWSHIP = '770';
+
+const lastTwentyPower = [];
 
 var dash = {
   deviceId: null,
@@ -286,26 +288,10 @@ var dash = {
     var voltage = Math.round(('voltage_mv' in realtime) ? (realtime.voltage_mv / 1000) : realtime.voltage);
 
     this.realtimeGauge.set(power);
-    if (message.deviceId === BAGGINS) {
-      if (power <= MIN_LIMIT_BAGGINS) {
-        const a = new Audio();
-        a.src = 'pew_pew.m4a';
-        a.autoplay = true;
-        a.play();
-      }
-    }
-    if (message.deviceId === FELLOWSHIP) {
-      if (power <= MIN_LIMIT_FELLOWSHIP) {
-        const a = new Audio();
-        a.src = 'pew_pew.m4a';
-        a.autoplay = true;
-        a.play();
-      }
-    }
-    // const a = new Audio();
-    // // a.src = 'pew_pew.m4a';
-    // // a.autoplay = true;
-    // // a.play();
+
+    bagginsAlert(message, power);
+    fellowshipAlert(message, power);
+
     // might switch to Vue.js if this gets tedious 
     $("#rtu-power").text(power + " W")
     $("#rtu-current").text(current + " A")
@@ -406,4 +392,47 @@ var dash = {
 
   },
 
+};
+
+
+function bagginsAlert(message, power) {
+  if (message.deviceId === BAGGINS) {
+    powerLimitAlert(message, power, BAGGINS, MIN_LIMIT_BAGGINS);
+  }
+};
+
+function fellowshipAlert(message, power) {
+  if (message.deviceId === FELLOWSHIP) {
+    powerLimitAlert(message, power, FELLOWSHIP, MIN_LIMIT_FELLOWSHIP);
+  }
+};
+
+
+function powerLimitAlert(message, power, deviceId, powerThreshold) {
+  if (message.deviceId === deviceId) {
+
+    lastTwentyPower.push(power);
+
+    if (lastTwentyPower.length >= 25) {
+      lastTwentyPower.shift();
+    }
+    console.log('lastTwentyPower', lastTwentyPower)
+
+    var temporaryPowerLimitCount = 0;
+    lastTwentyPower.forEach(p => {
+      if (p <= powerThreshold) {
+        temporaryPowerLimitCount += 1;
+      }
+    });
+    console.log('temporary power limit count', temporaryPowerLimitCount);
+
+    if (temporaryPowerLimitCount >= 19) {
+      const a = new Audio();
+      a.src = 'pew_pew.m4a';
+      a.autoplay = true;
+      a.play();
+    }
+
+    temporaryPowerLimitCount = 0;
+  }
 };
