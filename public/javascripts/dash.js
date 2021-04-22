@@ -1,7 +1,10 @@
 const FELLOWSHIP = '8006165E9AF891539E59440D7E7DFAE11DE187BA';
 const BAGGINS = '800650310E681064FD6305CF4A3E6F2E1DDFA451';
 const MIN_LIMIT_BAGGINS = '580';
+const MAX_LIMIT_BAGGINS = '640';
+
 const MIN_LIMIT_FELLOWSHIP = '770';
+const MAX_LIMIT_FELLOWSHIP = '805';
 
 const lastTwentyPower = [];
 
@@ -397,18 +400,18 @@ var dash = {
 
 function bagginsAlert(message, power) {
   if (message.deviceId === BAGGINS) {
-    powerLimitAlert(message, power, BAGGINS, MIN_LIMIT_BAGGINS);
+    powerLimitAlert(message, power, BAGGINS, MIN_LIMIT_BAGGINS, MAX_LIMIT_BAGGINS);
   }
 };
 
 function fellowshipAlert(message, power) {
   if (message.deviceId === FELLOWSHIP) {
-    powerLimitAlert(message, power, FELLOWSHIP, MIN_LIMIT_FELLOWSHIP);
+    powerLimitAlert(message, power, FELLOWSHIP, MIN_LIMIT_FELLOWSHIP, MAX_LIMIT_FELLOWSHIP);
   }
 };
 
 
-function powerLimitAlert(message, power, deviceId, powerThreshold) {
+function powerLimitAlert(message, power, deviceId, minPowerThreshold, maxPowerThreshold) {
   if (message.deviceId === deviceId) {
 
     lastTwentyPower.push(power);
@@ -418,21 +421,26 @@ function powerLimitAlert(message, power, deviceId, powerThreshold) {
     }
     console.log('lastTwentyPower', lastTwentyPower)
 
-    var temporaryPowerLimitCount = 0;
+    var temporaryMinPowerLimitCount = 0;
+    var temporaryMaxPowerLimitCount = 0;
     lastTwentyPower.forEach(p => {
-      if (p <= powerThreshold) {
-        temporaryPowerLimitCount += 1;
+      if (p <= minPowerThreshold) {
+        temporaryMinPowerLimitCount += 1;
+      }
+      if (p <= maxPowerThreshold) {
+        temporaryMaxPowerLimitCount += 1;
       }
     });
-    console.log('temporary power limit count', temporaryPowerLimitCount);
+    console.log('temporary power limit count', temporaryMinPowerLimitCount);
 
-    if (temporaryPowerLimitCount >= 19) {
+    if (temporaryMinPowerLimitCount >= 19 || temporaryMaxPowerLimitCount >= 19) {
       const a = new Audio();
       a.src = 'pew_pew.m4a';
       a.autoplay = true;
       a.play();
     }
 
-    temporaryPowerLimitCount = 0;
+    temporaryMinPowerLimitCount = 0;
+    temporaryMaxPowerLimitCount = 0;
   }
 };
