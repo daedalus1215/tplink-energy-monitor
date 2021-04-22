@@ -1,7 +1,7 @@
 const FELLOWSHIP = '8006165E9AF891539E59440D7E7DFAE11DE187BA';
 const BAGGINS = '800650310E681064FD6305CF4A3E6F2E1DDFA451';
 const MIN_LIMIT_BAGGINS = '580';
-const MAX_LIMIT_BAGGINS = '640';
+const MAX_LIMIT_BAGGINS = '680';
 
 const MIN_LIMIT_FELLOWSHIP = '770';
 const MAX_LIMIT_FELLOWSHIP = '805';
@@ -427,7 +427,7 @@ function powerLimitAlert(message, power, deviceId, minPowerThreshold, maxPowerTh
       if (p <= minPowerThreshold) {
         temporaryMinPowerLimitCount += 1;
       }
-      if (p <= maxPowerThreshold) {
+      if (p >= maxPowerThreshold) {
         temporaryMaxPowerLimitCount += 1;
       }
     });
