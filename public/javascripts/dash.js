@@ -292,11 +292,19 @@ var dash = {
 
     this.realtimeGauge.set(power);
 
-    bagginsAlert(message, power);
-    fellowshipAlert(message, power);
+    const isViolatinBaggins = bagginsAlert(message, power);
+    const isViolatinFellowship = fellowshipAlert(message, power);
 
-    // might switch to Vue.js if this gets tedious 
-    $("#rtu-power").text(power + " W")
+    if (isViolatinBaggins || isViolatinFellowship) {
+      $("#rtu-power").text(power + " W")
+        .css("color", "red")
+        .css("background-color", "yellow");
+    } else {
+      $("#rtu-power").text(power + " W")
+        .css("color", "black")
+        .css("background-color", "white");
+    }
+
     $("#rtu-current").text(current + " A")
     $("#rtu-voltage").text(voltage + " V")
 
@@ -400,13 +408,13 @@ var dash = {
 
 function bagginsAlert(message, power) {
   if (message.deviceId === BAGGINS) {
-    powerLimitAlert(message, power, BAGGINS, MIN_LIMIT_BAGGINS, MAX_LIMIT_BAGGINS);
+    return powerLimitAlert(message, power, BAGGINS, MIN_LIMIT_BAGGINS, MAX_LIMIT_BAGGINS);
   }
 };
 
 function fellowshipAlert(message, power) {
   if (message.deviceId === FELLOWSHIP) {
-    powerLimitAlert(message, power, FELLOWSHIP, MIN_LIMIT_FELLOWSHIP, MAX_LIMIT_FELLOWSHIP);
+    return powerLimitAlert(message, power, FELLOWSHIP, MIN_LIMIT_FELLOWSHIP, MAX_LIMIT_FELLOWSHIP);
   }
 };
 
@@ -438,9 +446,8 @@ function powerLimitAlert(message, power, deviceId, minPowerThreshold, maxPowerTh
       a.src = 'pew_pew.m4a';
       a.autoplay = true;
       a.play();
+      return true;
     }
-
-    temporaryMinPowerLimitCount = 0;
-    temporaryMaxPowerLimitCount = 0;
   }
+  return false;
 };
