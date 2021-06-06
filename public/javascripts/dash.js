@@ -1,10 +1,24 @@
 const FELLOWSHIP = '8006165E9AF891539E59440D7E7DFAE11DE187BA';
 const BAGGINS = '800650310E681064FD6305CF4A3E6F2E1DDFA451';
-const MIN_LIMIT_BAGGINS = '580';
-const MAX_LIMIT_BAGGINS = '680';
+// not strict
+// const MIN_LIMIT_BAGGINS = '530';
+// const MAX_LIMIT_BAGGINS = '660';
+// super strict
+const MIN_LIMIT_BAGGINS = '575';
+const MAX_LIMIT_BAGGINS = '670';
 
-const MIN_LIMIT_FELLOWSHIP = '790';
-const MAX_LIMIT_FELLOWSHIP = '820';
+
+//with laptop - not strict
+// const MIN_LIMIT_FELLOWSHIP = '800';
+// const MAX_LIMIT_FELLOWSHIP = '1000';
+
+//with laptop - strict
+// const MIN_LIMIT_FELLOWSHIP = '875';
+// const MAX_LIMIT_FELLOWSHIP = '925';
+
+// without laptop
+const MIN_LIMIT_FELLOWSHIP = '700';
+const MAX_LIMIT_FELLOWSHIP = '780';
 
 const lastTwentyPower = [];
 
