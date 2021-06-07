@@ -19,7 +19,7 @@ function loadLogConfig() {
     }
     console.log('Logger config file: "' + loggerConfigPath + '"')
 
-    let config  = JSON.parse(fs.readFileSync(loggerConfigPath, 'utf8'));
+    let config = JSON.parse(fs.readFileSync(loggerConfigPath, 'utf8'));
     logDirPath = config.logDirPath;
     logIntervalMs = (config.logIntervalSeconds * 1000);
     maxLogEntries = config.maxLogEntries;
@@ -39,7 +39,7 @@ function loadLogConfig() {
 
 function startLogging(device) {
   setInterval(() => { log(device); }, logIntervalMs);
-  console.log('Logging started for ' + device.alias + ' [' + device.deviceId + '] every ' + (logIntervalMs/1000) + ' seconds');
+  console.log('Logging started for ' + device.alias + ' [' + device.deviceId + '] every ' + (logIntervalMs / 1000) + ' seconds');
 }
 
 function writeLog(filePath, log) {
@@ -55,7 +55,7 @@ function writeLog(filePath, log) {
 function getLogEntries(filePath, callback) {
 
   fs.access(filePath, fs.constants.F_OK, (err) => {
-    if(err) {
+    if (err) {
       // No log file, init empty one
       writeLog(filePath, []);
       callback([]);
@@ -86,8 +86,8 @@ function log(device) {
     let filePath = getLogPath(device.deviceId);
 
     getLogEntries(filePath, (entries) => {
+      console.log('whaaat', logEntry);
       entries.push(logEntry)
-
       // Remove old entries
       entries.splice(0, entries.length - maxLogEntries);
 

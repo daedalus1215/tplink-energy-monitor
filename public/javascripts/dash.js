@@ -438,13 +438,14 @@ function powerLimitAlert(message, power, deviceId, minPowerThreshold, maxPowerTh
 
     lastTwentyPower.push(power);
 
-    if (lastTwentyPower.length >= 40) {
+    if (lastTwentyPower.length >= 150) {
       lastTwentyPower.shift();
     }
     console.log('lastTwentyPower', lastTwentyPower)
 
     var temporaryMinPowerLimitCount = 0;
     var temporaryMaxPowerLimitCount = 0;
+    
     lastTwentyPower.forEach(p => {
       if (p <= minPowerThreshold) {
         temporaryMinPowerLimitCount += 1;
@@ -453,9 +454,10 @@ function powerLimitAlert(message, power, deviceId, minPowerThreshold, maxPowerTh
         temporaryMaxPowerLimitCount += 1;
       }
     });
+
     console.log('temporary power limit count', temporaryMinPowerLimitCount);
 
-    if (temporaryMinPowerLimitCount >= 37 || temporaryMaxPowerLimitCount >= 37) {
+    if (temporaryMinPowerLimitCount >= 144 || temporaryMaxPowerLimitCount >= 144) {
       const a = new Audio();
       a.src = 'pew_pew.m4a';
       a.autoplay = true;
