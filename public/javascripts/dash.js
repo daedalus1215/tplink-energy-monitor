@@ -235,36 +235,36 @@ var dash = {
   },
 
   initUsageLog: function () {
-    var ctx = document.getElementById('logged-usage-chart').getContext('2d');
-    this.usageLogChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        datasets: [{
-          label: "Power (W)",
-          borderColor: 'rgb(255, 99, 132)',
-          data: []
-        }]
-      },
-      options: {
-        legend: {
-          display: false
-        },
-        scales: {
-          xAxes: [{
-            display: true,
-          }],
-          yAxes: [{
-            ticks: {
-              beginAtZero: true
-            }
-          }]
-        },
-        maintainAspectRatio: false,
-        tooltips: {
-          intersect: false
-        }
-      }
-    });
+    // var ctx = document.getElementById('logged-usage-chart').getContext('2d');
+    // this.usageLogChart = new Chart(ctx, {
+    //   type: 'line',
+    //   data: {
+    //     datasets: [{
+    //       label: "Power (W)",
+    //       borderColor: 'rgb(255, 99, 132)',
+    //       data: []
+    //     }]
+    //   },
+    //   options: {
+    //     legend: {
+    //       display: false
+    //     },
+    //     scales: {
+    //       xAxes: [{
+    //         display: true,
+    //       }],
+    //       yAxes: [{
+    //         ticks: {
+    //           beginAtZero: true
+    //         }
+    //       }]
+    //     },
+    //     maintainAspectRatio: false,
+    //     tooltips: {
+    //       intersect: false
+    //     }
+    //   }
+    // });
   },
 
   addLogEntry: function (logEntry, updateChart) {
