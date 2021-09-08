@@ -60,3 +60,6 @@ typings/
 dist/
 .scannerwork/
 *-log.json
+
+
+constants.js

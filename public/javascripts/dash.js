@@ -1,5 +1,5 @@
-const FELLOWSHIP = '8006165E9AF891539E59440D7E7DFAE11DE187BA';
-const BAGGINS = '800650310E681064FD6305CF4A3E6F2E1DDFA451';
+const { BAGGINS, FELLOWSHIP } = require('../../constants');
+
 // not strict
 // const MIN_LIMIT_BAGGINS = '530';
 // const MAX_LIMIT_BAGGINS = '660';
@@ -71,8 +71,7 @@ var dash = {
       setTimeout(dash.initWsConnection, 2000);
     }
   },
-  // "800650310E681064FD6305CF4A3E6F2E1DDFA451" -- Baggins
-  // "8006165E9AF891539E59440D7E7DFAE11DE187BA" -- Fellowship
+
   wsMessageHandler: function (messageEvent) {
     let message = JSON.parse(messageEvent.data);
     if (message.deviceId === dash.deviceId) {
@@ -445,7 +444,7 @@ function powerLimitAlert(message, power, deviceId, minPowerThreshold, maxPowerTh
 
     var temporaryMinPowerLimitCount = 0;
     var temporaryMaxPowerLimitCount = 0;
-    
+
     lastTwentyPower.forEach(p => {
       if (p <= minPowerThreshold) {
         temporaryMinPowerLimitCount += 1;
