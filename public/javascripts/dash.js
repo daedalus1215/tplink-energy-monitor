@@ -1,11 +1,9 @@
-const { BAGGINS, FELLOWSHIP } = require('../../constants');
-
 // not strict
 // const MIN_LIMIT_BAGGINS = '530';
 // const MAX_LIMIT_BAGGINS = '660';
 // super strict
-const MIN_LIMIT_BAGGINS = '575';
-const MAX_LIMIT_BAGGINS = '670';
+const MIN_LIMIT_BAGGINS = '1250';
+const MAX_LIMIT_BAGGINS = '1350';
 
 
 //with laptop - not strict
