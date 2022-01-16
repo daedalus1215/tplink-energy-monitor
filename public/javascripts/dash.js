@@ -266,8 +266,8 @@ var dash = {
 
   addLogEntry: function (logEntry, updateChart) {
 
-    dash.usageLogChart.data.labels.push(moment(logEntry.ts, 'x').format("MMM Do HH:mm"));
-    dash.usageLogChart.data.datasets.forEach(function (dataset) {
+    dash.usageLogChart && dash.usageLogChart.data.labels.push(moment(logEntry.ts, 'x').format("MMM Do HH:mm"));
+    dash.usageLogChart && dash.usageLogChart.data.datasets.forEach(function (dataset) {
       dataset.data.push({
         x: logEntry.ts,
         y: logEntry.pw
@@ -283,7 +283,7 @@ var dash = {
       dash.addLogEntry(entry, false);
     })
 
-    dash.usageLogChart.update();
+    dash.usageLogChart && dash.usageLogChart.update();
   },
 
   realtimeTrendChartOnRefresh: function (chart) {
