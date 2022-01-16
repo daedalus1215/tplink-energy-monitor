@@ -274,7 +274,7 @@ var dash = {
       });
     });
     if (updateChart) {
-      dash.usageLogChart.update();
+      dash.usageLogChart && dash.usageLogChart.update();
     }
   },
 
